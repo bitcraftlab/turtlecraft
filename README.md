@@ -1,9 +1,32 @@
-       __   ___   ___________    ________  _____  ________   ____
-      / /  / _ | / __/ __/ _ \  /_  __/ / / / _ \/_  __/ /  / __/
-     / /__/ __ |_\ \/ _// , _/   / / / /_/ / , _/ / / / /__/ _/  
-    /____/_/ |_/___/___/_/|_|   /_/  \____/_/|_| /_/ /____/___/  
-                                                             
 
-JavaScript turtle graphics to SVG. Why? Laser cutting and other CNC fun... 
+       _________             ____________             ________             ___________     
+       __  ____/____________ ___  __/_  /_____  __    ___  __/___  __________  /___  /____ 
+       _  /    __  ___/  __ `/_  /_ _  __/_  / / /    __  /  _  / / /_  ___/  __/_  /_  _ \
+       / /___  _  /   / /_/ /_  __/ / /_ _  /_/ /     _  /   / /_/ /_  /   / /_ _  / /  __/
+       \____/  /_/    \__,_/ /_/    \__/ _\__, /      /_/    \__,_/ /_/    \__/ /_/  \___/ 
+                                         /____/                                            
 
-Try it with the online live editor: http://forresto.github.com/turtle-svg/
+
+### What's this?
+
+**TurtleCraft** is a Sandbox for Computational Craft.
+You can control a LOGO-style turtle to create crafty patterns.
+
+Currently it can create:
+
+* SVG for laser cutting
+
+### What's next?
+
+We are currently working on:
+
+* SVG for hand embroidery
+* PES for machine embroidery
+
+### Show me the Turtle!
+
+You can play with it [here](http://bitcraftlab.github.com/turtlecraft/).
+
+### I want more Turtles!
+
+The **Crafty Turtle** is based on Forresto's [**Laser Turtle**](https://github.com/forresto/turtle-svg).
