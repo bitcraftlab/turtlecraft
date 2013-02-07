@@ -1,4 +1,3 @@
-
        _________             ____________             ________             ___________     
        __  ____/____________ ___  __/_  /_____  __    ___  __/___  __________  /___  /____ 
        _  /    __  ___/  __ `/_  /_ _  __/_  / / /    __  /  _  / / /_  ___/  __/_  /_  _ \
@@ -9,7 +8,7 @@
 
 ### What's this?
 
-**TurtleCraft** is a Sandbox for Computational Craft.
+**TurtleCraft** is a Sandbox for Computational Craft.  
 You can control a LOGO-style turtle to create crafty patterns.
 
 Currently it can create:
