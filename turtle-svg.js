@@ -1,6 +1,6 @@
 window.onload = function(){
 
-  ace.config.set("workerPath", ".");
+  ace.config.set("workerPath", "js");
   var editor = ace.edit("editor");
   editor.setTheme("ace/theme/monokai");
   var session = editor.getSession();
@@ -11,6 +11,7 @@ window.onload = function(){
   var autoCheck = document.getElementById("auto");
   var helpButton = document.getElementById("show-help");
   var exportButton = document.getElementById("export");
+  var exportPNGButton = document.getElementById("export-png");
   var rightColumn = document.getElementById("right-column");
   var link = document.getElementById("link");
   var shareLink = document.getElementById("share-link");
@@ -26,6 +27,8 @@ window.onload = function(){
 
   var currentSVGCode = "";
   var currentSVGString = "";
+
+  var currentCodeSaved = true;
 
   var autoEval = false;
 
@@ -210,6 +213,10 @@ window.onload = function(){
   helpButton.onclick = toggleHelp;
   helpClose.onclick = toggleHelp;
 
+  /*
+    Export options
+  */
+
   exportButton.onclick = function(){
     if (!currentSVGString) { return; }
 
@@ -223,10 +230,28 @@ window.onload = function(){
     var svgBlob = new Blob([comment, currentSVGString], { "type" : "image/svg+xml" });
     var svgBlobURL = window.URL.createObjectURL(svgBlob);
     if (svgBlobURL) {
-      // FIX this doesn't work in Safari
+      // FIXME this doesn't work in Safari
       window.open(svgBlobURL);
     } else {
+      // Both of these crash Safari with 50000 points :-(
+      // window.open("data:image/svg+xml;base64,"+window.btoa(comment+currentSVGString));
       window.open("data:image/svg+xml,"+encodeURIComponent(comment+currentSVGString));
+    }
+  };
+
+  exportPNGButton.onclick = function(){
+    if (!svgImage) { return; }
+
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+    canvas.width = svgImage.width;
+    canvas.height = svgImage.height;
+    context.drawImage(svgImage, 0, 0);
+    try {
+      var pngDataURL = canvas.toDataURL();
+      window.open( pngDataURL );
+    } catch (error) {
+      rightColumn.appendChild(canvas);
     }
   };
 
@@ -235,21 +260,44 @@ window.onload = function(){
     Code saving and loading
   */
 
+  session.on("change", function(){
+    if (currentCodeSaved) {
+      currentCodeSaved = false;
+      document.title = "LASER TURTLE -- Turtle Graphics to SVG";
+      history.pushState({title: document.title}, document.title, "#unsaved");
+    }
+  });
+
   shareLink.onclick = function() {
     this.select();
   };
 
-  // Compress code for sharing
+  // Compress code for sharing 
+  // With help from https://github.com/mrdoob/htmleditor
   var saveToURL = function(){
-    // With help from https://github.com/mrdoob/htmleditor
-    var packed = encode( editor.getValue() );
+    currentCodeSaved = true;
+
+    var currentCode = editor.getValue();
+    var packed = encode( currentCode );
     shareLink.style.display = "inline";
     shareLink.value = 'http://forresto.github.com/turtle-svg/#code/' + packed;
     var now = new Date();
     document.title = "Saved " + now.toLocaleTimeString() + " -- LASER TURTLE";
-    window.location.href = "#code/"+packed;
+    // window.location.href = "#code/"+packed;
+    var state = {
+      title: document.title,
+      code: currentCode
+    };
+    if (window.location.hash === "#unsaved") {
+      history.replaceState(state, document.title, "#code/"+packed);
+    } else {
+      history.pushState(state, document.title, "#code/"+packed);
+    }
   };
-  link.onclick = saveToURL;
+  link.onclick = function(){
+    saveToURL();
+    shareLink.select();
+  };
   var decode = function ( string ) {
     return RawDeflate.inflate( window.atob( string ) );
   };
@@ -257,18 +305,37 @@ window.onload = function(){
     return window.btoa( RawDeflate.deflate( string ) );
   };
 
+  var setEditorCode = function (code) {
+    currentCodeSaved = false;
+    editor.setValue(code, 1);
+    currentCodeSaved = true;
+  };
+
   var loadCodeFromHash = function(){
     if (window.location.hash.substr(0,5) === "#code") {
       try {
         var code = decode( window.location.hash.substr(6) );
         if (code !== editor.getValue()){
-          editor.setValue(code, 1);
+          var state = {
+            title: document.title,
+            code: code
+          };
+          history.replaceState(state, document.title, window.location.hash);
+          setEditorCode(code);
           testCode();
         }
       } catch (e) {}
     }
   };
-  window.onhashchange = loadCodeFromHash;
+
+  window.onpopstate = function(e){
+    if (e.state) {
+      document.title = e.state.title;
+      if (e.state.code !== undefined) {
+        setEditorCode(e.state.code);
+      }
+    }
+  };
 
   // See if code is set on load
   if ( window.location.hash ) {

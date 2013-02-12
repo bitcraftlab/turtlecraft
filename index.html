@@ -48,7 +48,7 @@
       }
 
       #canvas-menu > div {
-        margin: 5px;
+        margin-top: 5px;
         padding-right: 10px;
         float: left;
         font-size: 15px;
@@ -119,10 +119,9 @@
   </head>
   <body>
 
-    <div id="editor">// Press ALT + ENTER to run.
-
-for(var i=0; i&lt;200000; i++) {
-  turnLeft(Math.random());
+    <div id="editor">// Press CMD + ENTER to run.
+for(var i=0; i&lt;50000; i++) {
+  turnLeft(0.1-Math.random()*0.2);
   moveForward(1);
 }
 </div>
@@ -151,10 +150,10 @@ for(var i=0; i&lt;200000; i++) {
           <input id="share-link" type="text" />
         </div>
         <div>
-          <button id="link" title="⌘-S">Share Code</button>
+          <button id="link" title="⌘-S saves code to the URL">Share Code</button>
         </div>
         <div>
-          <button id="export">Export SVG</button>
+          <button id="export">Export SVG</button> <button id="export-png" style="display:none;">PNG</button>
         </div>
       </div>
 
