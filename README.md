@@ -13,13 +13,13 @@ You can control a LOGO-style turtle to create crafty patterns.
 
 Currently it can create:
 
+* SVG for hand embroidery
 * SVG for laser cutting
 
 ### What's next?
 
 We are currently working on:
 
-* SVG for hand embroidery
 * PES for machine embroidery
 
 ### Show me the Turtle!
