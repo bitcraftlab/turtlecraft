@@ -1,11 +1,20 @@
 window.onload = function(){
 
+
+  // get rid of hard coded urls
+  // var baseURL = location.href.replace(/\/[^\/]*(#.*)?$/,"/"); // strip filename + hash
+  var baseURL = location.href.replace(/\/?#.*/, ""); // strip hash
+  
+  //var currentWorker = "turtle-svg-worker.js";
+  var currentWorker = "worker-stitch-turtle-svg.js";
+
   ace.config.set("workerPath", "js");
   var editor = ace.edit("editor");
   editor.setTheme("ace/theme/monokai");
   var session = editor.getSession();
   session.setMode("ace/mode/javascript");
   session.setTabSize(2);
+
 
   var applyButton = document.getElementById("apply");
   var autoCheck = document.getElementById("auto");
@@ -20,22 +29,24 @@ window.onload = function(){
   var svgContainer = document.getElementById("svg-container");
   var svgImage = document.getElementById("svg-image");
   var info = document.getElementById("info");
+  var modeMenu = document.getElementById("mode");
 
   var testingCode;
   var testCodeStart;
-  var svgGenTime;
+  var svgLoadStart;
 
   var currentSVGCode = "";
   var currentSVGString = "";
+  var currentSVGStrings = {};
+
 
   var currentCodeSaved = true;
-
-  var autoEval = false;
 
   var worker;
   var workerBusy = false;
   var workerError = false;
   var loadingSVG = false;
+  var createdSVG = false;
 
   var labels = {
     run: "Run",
@@ -50,21 +61,31 @@ window.onload = function(){
     processing: "Calculating...",
     rendering: "Loading...",
     cancelled: "Aborted.",
-    outputSuccess: function(created, loaded){
-      var c = Math.round(created/1000*100)/100;
-      var l = loaded - testCodeStart - created;
-      l = Math.round(l/1000*100)/100;
-      return "SVG created in " + c + "s, loaded in " + l + "s";
+    success: function(){
+      var ltime, ctime;
+      var round = function(x) { return Math.round(x/1000*100)/100 };
+      ltime = Date.now() - svgLoadStart;
+      if(createdSVG) {
+        ctime = svgLoadStart - testCodeStart;
+        return "SVG created in " + round(ctime) + "s, loaded in " + round(ltime) + "s";
+      } else {
+        return "SVG updated in " + round(ltime) + "s";
+      }    
     },
     clean: ""
   };
 
+  var beforeLoading = function() {
+    info.innerHTML = infos.rendering;
+    applyButton.innerHTML = labels.loading;
+    applyButton.disabled = true;
+    svgLoadStart = Date.now();
+  };
 
-
-  var showStats = function() {
-    info.innerHTML = workerError ? infos.outputError : infos.outputSuccess(svgGenTime, Date.now());
+  var afterLoading = function() {
     applyButton.innerHTML = labels.run;
     applyButton.disabled = false;
+    info.innerHTML = workerError ? infos.outputError : infos.success();
   };
 
   var setupWorker = function(){
@@ -75,21 +96,15 @@ window.onload = function(){
       info.innerHTML = infos.cancelled;
     }
 
-    worker = new Worker('turtle-svg-worker.js');
+    worker = new Worker(currentWorker);
     worker.onmessage = function(e) {
-
-      workerBusy = false;
       workerError = (e.data === "");
-
+      workerBusy = false;
       if (workerError){
-        showStats();
+        afterLoading();
       } else {
-        info.innerHTML = infos.rendering;
-        applyButton.innerHTML = labels.loading;
-        applyButton.disabled = true;
-        // calculate + show the amount of time that was required to complete SVG creation
-        svgGenTime = Date.now() - testCodeStart;
-        setSVG(e.data, showStats);
+        beforeLoading();
+        setSVG(e.data, afterLoading);      
       }
 
     };
@@ -123,11 +138,33 @@ window.onload = function(){
     }
   };
 
-  autoCheck.onchange = function(){
+  var autoEval;
+  var currentSVGMode;
+
+  var getCurrentSVGMode = function() {
+    var self = modeMenu;
+    currentSVGMode = self.options[self.selectedIndex].value;
+  }
+
+  var getAutoEval = function() {
     autoEval = autoCheck.checked;
+  }
+
+  // init autoEval and currentSVGMode from the state of the form
+  getAutoEval();
+  getCurrentSVGMode();
+
+  autoCheck.onchange = function(){
+    getAutoEval();
     if (autoEval) {
       testCode();
     }
+  };
+
+  modeMenu.onchange = function(){
+    getCurrentSVGMode();
+    beforeLoading();
+    updateSVG(afterLoading);
   };
 
   applyButton.onclick = function(){
@@ -195,12 +232,19 @@ window.onload = function(){
 
   var setSVG = function(message, cb_onload){
     currentSVGCode = message.code;
-    currentSVGString = message.svg;
+    currentSVGStrings = message.svg;
+    createdSVG = true;
+    updateSVG(cb_onload);
+  };
+
+  var updateSVG = function(cb_onload) {
+    currentSVGString = currentSVGStrings[currentSVGMode];
     loadingSVG = true;
     svgImage.onload = function() {
       cb_onload();
       loadingSVG = false;
-    }
+      createdSVG = false;
+    };
     svgImage.src = buildURL(currentSVGString);
   };
 
@@ -221,7 +265,7 @@ window.onload = function(){
     if (!currentSVGString) { return; }
 
     var packed = encode( currentSVGCode );
-    var perma = 'http://forresto.github.com/turtle-svg/#code/' + packed;
+    var perma = baseURL + '#code/' + packed;
     var comment = "<!--\n\n" +
       "Made with LASER TURTLE; here is editor and source: \n" + 
       perma + "\n\n" +
@@ -280,7 +324,7 @@ window.onload = function(){
     var currentCode = editor.getValue();
     var packed = encode( currentCode );
     shareLink.style.display = "inline";
-    shareLink.value = 'http://forresto.github.com/turtle-svg/#code/' + packed;
+    shareLink.value = baseURL + '#code/' + packed;
     var now = new Date();
     document.title = "Saved " + now.toLocaleTimeString() + " -- LASER TURTLE";
     // window.location.href = "#code/"+packed;

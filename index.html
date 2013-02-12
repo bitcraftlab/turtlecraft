@@ -64,7 +64,7 @@
         line-height: 30px;
       }
 
-      button {
+      button, select {
         font-size: 15px;
       }
 
@@ -120,10 +120,11 @@
   <body>
 
     <div id="editor">// Press CMD + ENTER to run.
-for(var i=0; i&lt;50000; i++) {
-  turnLeft(0.1-Math.random()*0.2);
-  moveForward(1);
-}
+  for(var i = 0; i &lt;1000; i++) {
+    turnLeft(0.1-Math.random()*0.2);
+    moveForward(5);
+  }
+
 </div>
 
     <div id="top-bar">
@@ -146,6 +147,13 @@ for(var i=0; i&lt;50000; i++) {
       <div id="info"></div>
 
       <div id="canvas-menu">
+        <div>
+          <select id="mode">
+            <option value="front">Show Front</option>
+            <option value="back">Show Back</option>
+            <option value="both">Show Both</option>
+          </select>
+        </div>
         <div>
           <input id="share-link" type="text" />
         </div>
