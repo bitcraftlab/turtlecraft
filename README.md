@@ -11,6 +11,13 @@
 **TurtleCraft** is a Sandbox for Computational Craft.  
 You can control a LOGO-style turtle to create crafty patterns.
 
+### How does it work?
+
+Check out the [TurtleCraft Wiki](../../wiki) for an introduction
+and some examples.
+
+### What output does it create?
+
 Currently it can create:
 
 * SVG for hand embroidery
