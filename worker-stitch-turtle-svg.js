@@ -115,7 +115,9 @@ Track.prototype.add = function(fn, x, y, pen) {
   this.d[fn](x, y, pen);
   this.f[fn](x, y, pen && active);
   this.b[fn](x, y, pen && !active);
-  _moveCount++;
+  if(pen) {
+    _moveCount++;
+  }
 }
 
 // Set color and make a new path
