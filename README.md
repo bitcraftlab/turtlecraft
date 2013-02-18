@@ -6,6 +6,11 @@ You can control a LOGO-style turtle to create crafty patterns.
 
 ![tentacle example](../../wiki/crafty-turtle-examples-tentacles.png)
 
+You can also use mathematical functions to control the turtle.  
+Like the infamous ![Darth Vader Curve](../../wiki/Darth-Vader-Curve-Example).
+
+![darth vader curve example](../../wiki/darth-vader-curve-example-wellbehaved.png)
+
 ### How does it work?
 
 Check out the [TurtleCraft Wiki](../../wiki) for an introduction
