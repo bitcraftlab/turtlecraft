@@ -42,14 +42,14 @@ var _turn = function(){
   _vector.y = Math.round( Math.cos(TAU*_currentAngle) * _accuracy );
 };
 
-var turnRight, r;
-turnRight = r =  function(angle){
+var turnRight, right, r;
+turnRight = right = r =  function(angle){
   if (isNaN(angle)) { return; }
 
   turnLeft(-angle);
 };
-var turnLeft, l;
-turnLeft = l = function(angle){
+var turnLeft, left, l;
+turnLeft = left = l = function(angle){
   if (isNaN(angle)) { return; }
 
   _currentAngle += angle;
@@ -58,8 +58,8 @@ turnLeft = l = function(angle){
 };
 
 // Absolute turn
-var turnTo, t;
-turnTo = t = function(angle){
+var turnTo, turn, t;
+turnTo = turn = t = function(angle){
   if (isNaN(angle)) { return; }
 
   _currentAngle = angle;
@@ -143,14 +143,22 @@ var _positionBy = function(x, y) {
 }
 
 // Relative moves
-var moveForward, f;
-moveForward = f = function (distance) {
+var moveForward, f, forward;
+moveForward = forward = f = function (distance) {
   if (isNaN(distance)) { return; }
   var x = distance * _vector.x / _accuracy;
   var y = distance * _vector.y / _accuracy;
   _currentPath.rel(x, y, _pen);
 
 }
+
+// Absolute moves
+var goTo, goto, g;
+goTo = goto = function (x, y) {
+  if (isNaN(x) || isNaN(y)) { return; }
+  _currentPath.abs(x, y, _pen);
+}
+
 
 // SVG path 
 // Absolute move
