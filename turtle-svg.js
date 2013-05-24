@@ -8,7 +8,7 @@ window.onload = function(){
   //var currentWorker = "turtle-svg-worker.js";
   var currentWorker = "worker-stitch-turtle-svg.js";
 
-  ace.config.set("workerPath", "js");
+  ace.config.set("workerPath", "js/ace/src-min-noconflict");
   var editor = ace.edit("editor");
   editor.setTheme("ace/theme/monokai");
   var session = editor.getSession();
